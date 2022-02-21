@@ -17,13 +17,20 @@ Welcome to the Vet-Clinic-Database, an information store for pet animals, which 
 ## Built With
 - SQL.
 
-## Author
+## Authors
 
 👤 **Mohamed ELShamy**
 
 - GitHub: [@mohamedelshamy55](https://github.com/mohamedelshamy55)
 - Twitter: [@moelshamy55](https://mobile.twitter.com/moelshamy55)
 - LinkedIn: [mohamedelshamy85](https://www.linkedin.com/in/mohamedelshamy85/)
+
+ 👤**Mucyo claude**
+
+- GitHub: [@Mucyosoda](https://github.com/Mucyosoda)
+- Twitter: [@mucyoclaude1](https://mobile.twitter.com/mucyoclaude1)
+- LinkedIn: [Mucyoclaude](https://www.linkedin.com/in/claudeMucyo)
+
 
 
 ## 🤝 Contributing
