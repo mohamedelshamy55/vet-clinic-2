@@ -1,62 +1,43 @@
-![](https://img.shields.io/badge/Microverse-blueviolet)
+# Vet-clinic
 
-# Project Name
+Welcome to the Vet-Clinic-Database, an information store for pet animals, which tracks data such as pet-weight, nutered-state, date-of-birth and animal birth.
 
-> Description the project.
-
-
-## Built With
-
-- Major languages
-- Frameworks
-- Technologies used
-
-## Live Demo (if available)
-
-[Live Demo Link](https://livedemo.com)
+- Vet-clinic database creation.
+- In this project, database is crated in the postgresql and wrote SQL to create table.
+- create a table to store animals' information, insert some data into it, and query it.
+- SQL is used for query.
 
 
 ## Getting Started
 
-**This is an example of how you may give instructions on setting up your project locally.**
-**Modify this file to match your project, remove sections that don't apply. For example: delete the testing section if the currect project doesn't require testing.**
+- Use [schema.sql](./schema.sql) to create all tables.
+- Use [data.sql](./data.sql) to populate tables with sample data.
+- Check [queries.sql](./queries.sql) for examples of queries that can be run on a newly created database. **Important note: this file might include queries that make changes in the database (e.g., remove records). Use them responsibly!**
 
-
-To get a local copy up and running follow these simple example steps.
-
-### Prerequisites
-
-### Setup
-
-### Install
-
-### Usage
-
-### Run tests
-
-### Deployment
-
-
+## Built With
+- SQL.
 
 ## Authors
 
-👤 **Author1**
+👤 **Mohamed ELShamy**
 
-- GitHub: [@githubhandle](https://github.com/githubhandle)
-- Twitter: [@twitterhandle](https://twitter.com/twitterhandle)
-- LinkedIn: [LinkedIn](https://linkedin.com/in/linkedinhandle)
+- GitHub: [@mohamedelshamy55](https://github.com/mohamedelshamy55)
+- Twitter: [@moelshamy55](https://mobile.twitter.com/moelshamy55)
+- LinkedIn: [mohamedelshamy85](https://www.linkedin.com/in/mohamedelshamy85/)
 
-👤 **Author2**
+ 👤**Mucyo claude**
 
-- GitHub: [@githubhandle](https://github.com/githubhandle)
-- Twitter: [@twitterhandle](https://twitter.com/twitterhandle)
-- LinkedIn: [LinkedIn](https://linkedin.com/in/linkedinhandle)
+- GitHub: [@Mucyosoda](https://github.com/Mucyosoda)
+- Twitter: [@mucyoclaude1](https://mobile.twitter.com/mucyoclaude1)
+- LinkedIn: [Mucyoclaude](https://www.linkedin.com/in/claudeMucyo)
+
+
 
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome!
 
-Feel free to check the [issues page](../../issues/).
+Feel free to check the [issues page](https://github.com/mohamedelshamy55/Vet-clinic-database/issues).
 
 ## Show your support
 
