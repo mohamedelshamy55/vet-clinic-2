@@ -1,67 +1,184 @@
-/* Database schema to keep the structure of entire database. */
-CREATE TABLE animals (
-    id INT,
-    name varchar(100),
-    date_of_birth DATE,
-    escape_attempts INT,
-    neutered BOOLEAN,
-    weight_kg:DECIMAL,
-    species:varchar(100)
-);
+/*Queries that provide answers to the questions from all projects.*/
+SELECT * from animals WHERE name = 'Luna';
+-- Find all animals whose name ends in "mon".
+ SELECT *
+ FROM animals
+ WHERE name LIKE '%mon';
+-- List the name of all animals born between 2016 and 2019.
+SELECT name 
+FROM animals
+WHERE date_of_birth BETWEEN '2016-01-01' AND '2019-12-31';
+-- List the name of all animals that are neutered and have less than 3 escape attempts.
+SELECT name 
+FROM animals
+WHERE neutered = 'true' AND escape_attempts < 3;
+-- List date of birth of all animals named either "Agumon" or "Pikachu".
+SELECT date_of_birth
+FROM animals
+WHERE name = 'Agumon' or name ='Pikachu';
+-- List name and escape attempts of animals that weigh more than 10.5kg
+SELECT name,escape_attempts 
+FROM animals 
+WHERE weight_kg > 10.5;
+-- Find all animals that are neutered.
+SELECT *
+FROM animals 
+WHERE neutered ='true';
+-- Find all animals not named Gabumon.
+SELECT *
+FROM animals 
+WHERE NOT name ='Gabumon';
+-- Find all animals with a weight between 10.4kg and 17.3kg (including the animals with the weights that equals precisely 10.4kg or 17.3kg
+SELECT *
+FROM animals 
+WHERE weight_kg >= 10.4 AND weight_kg <= 17.3;
 
--- owners table 
-CREATE TABLE owners (
-    id INT,
-    full_name varchar(100),
-    age INT,
-    PRIMARY KEY(owner_id)
-);
+BEGIN;
+UPDATE animals SET species='unspecified';
+SELECT * FROM animals;
+ROLLBACK;
 
--- species table 
-CREATE TABLE species (
-    id INT,
-    name varchar(100),
-    PRIMARY KEY(species_id)
-);
+-- start a transaction
+BEGIN;
+-- animal end with mon 
+UPDATE animals 
+SET species = 'digimon'
+WHERE name LIKE '%mon';
+
+-- animal don't have species yet
+UPDATE animals 
+SET species = 'pokemon'
+WHERE species is NULL;
+
+-- commit the transaction
+COMMIT;
 
 
-ALTER TABLE animals DROP COLUMN species;
---Add column species_id which is a foreign key referencing species table
-ALTER TABLE animals ADD COLUMN species_id INT,
-ADD CONSTRAINT fk_species FOREIGN KEY(species_id) REFERENCES species(id);
---Add column owner_id which is a foreign key referencing the owners table
-ALTER TABLE animals ADD COLUMN owner_id INT,
-ADD CONSTRAINT fk_owners FOREIGN KEY(owner_id) REFERENCES owners(id);
+BEGIN;
+DELETE FROM animals
+WHERE date_of_birth>'2022-01-01';
+SAVEPOINT borndate;
+UPDATE animals
+SET weight_kg = weight_kg*-1;
+ROLLBACK TO borndate;
+UPDATE animals
+SET weight_kg = weight_kg*-1
+WHERE weight_kg<0;
+COMMIT;
 
---Create a table named vets 
-CREATE TABLE vets(
-   id SERIAL PRIMARY KEY,
-   name VARCHAR(255),
-   age INT,
-   date_of_graduation DATE
-   );
---There is a many-to-many relationship between the tables species and vets: a vet can specialize in multiple species, and a species can have multiple vets specialized in it.
--- Create a "join table" called specializations to handle this relationship.
-CREATE TABLE specializations (
-    species_id int,
-    vets_id int,
-    CONSTRAINT fk_species FOREIGN KEY(species_id) REFERENCES species(id),
-    CONSTRAINT fk_vets FOREIGN KEY(vets_id) REFERENCES vets(id)
-);
---There is a many-to-many relationship between the tables animals and vets: an animal can visit multiple vets and one vet can be visited by multiple animals.
--- Create a "join table" called visits to handle this relationship, it should also keep track of the date of the visit.
-CREATE TABLE visits (
-    animals_id int,
-    vets_id int,
-    date_of_visit date,
-    CONSTRAINT fk_animals FOREIGN KEY(animals_id) REFERENCES animals(id),
-    CONSTRAINT fk_vets FOREIGN KEY(vets_id) REFERENCES vets(id)
-);
+-- How many animals are there?
+SELECT COUNT(*) FROM animals;
+-- How many animals have never tried to escape?
+SELECT COUNT(escape_attempts)
+FROM animals
+WHERE escape_attempts = 0;
+-- What is the average weight of animals?
+SELECT AVG(weight_kg)
+FROM animals;
+-- Who escapes the most, neutered or not neutered animals?
+SELECT 
+neutered,MAX(escape_attempts)
+FROM animals
+GROUP BY neutered
+-- What is the minimum and maximum weight of each type of animal?
+SELECT MIN(weight_kg),MAX(weight_kg) FROM animals;
+-- What is the average number of escape attempts per animal type of those born between 1990 and 2000?
+SELECT AVG(escape_attempts)
+FROM animals
+WHERE date_of_birth BETWEEN '1990-01-01' AND '2000-12-31';
 
-ALTER TABLE owners ADD COLUMN email VARCHAR(120);
+--Write queries (using JOIN) to answer the following questions:
 
-CREATE INDEX visits_animal_index ON visits (animal_id);
+--What animals belong to Melody Pond?
+SELECT animals.name FROM animals JOIN owners ON animals.owner_id = owners.id WHERE full_name='Melody Pond';
 
-CREATE INDEX visits_vet_id_index ON visits (vet_id);
+--List of all animals that are pokemon (their type is Pokemon).
+SELECT animals.name FROM animals JOIN species ON animals.species_id=species.id WHERE species_id=1;
 
-CREATE INDEX owners_email_index ON owners (email);
+--List all owners and their animals, remember to include those that don't own any animal.
+SELECT animals.name,full_name FROM owners LEFT JOIN animals ON animals.owner_id=owners.id;
+
+--How many animals are there per species?
+SELECT species.name, COUNT(*) from animals JOIN species ON animals.species_id=species.id GROUP BY species.name;
+
+--List all Digimon owned by Jennifer Orwell.
+SELECT animals.name FROM animals JOIN owners ON animals.owner_id=owners.id WHERE owners.full_name='Jennifer Orwell' AND species_id=2;
+
+
+--List all animals owned by Dean Winchester that haven't tried to escape.
+SELECT animals.name FROM animals JOIN owners ON animals.owner_id=owners.id 
+WHERE owners.full_name='Dean Winchester' AND escape_attempts=0;
+
+--Who owns the most animals?
+SELECT owners.full_name, COUNT(animals.name) AS total FROM owners LEFT JOIN animals ON animals.owner_id=owners.id 
+GROUP BY owners.full_name ORDER BY total DESC LIMIT 1;
+
+--Write queries to answer the following:
+
+--Who was the last animal seen by William Tatcher?
+SELECT vets.name, animals.name, date_of_visit FROM vets JOIN visits ON vets.id=visits.vets_id
+JOIN animals ON animals.id= visits.animals_id WHERE vets.name ='William Tatcher' ORDER BY visits.date_of_visit DESC LIMIT 1;
+
+--How many different animals did Stephanie Mendez see?
+SELECT COUNT(*) as total_animals from vets JOIN visits ON vets.id = visits.vets_id WHERE name='Stephanie Mendez';
+
+--List all vets and their specialties, including vets with no specialties.
+SELECT 
+	vets.name,
+	species.name as specialization
+from vets
+LEFT JOIN specializations ON specializations.vets_id = vets.id
+LEFT JOIN  species ON specializations.species_id = species.id;
+
+--List all animals that visited Stephanie Mendez between April 1st and August 30th, 2020.
+SELECT animals.name ,date_of_visit from animals 
+JOIN visits ON animals.id= visits.animals_id JOIN vets ON vets.id=visits.vets_id
+ WHERE vets.name= 'Stephanie Mendez' AND visits.date_of_visit BETWEEN '2020-04-01' AND '2020-08-30';
+
+--What animal has the most visits to vets?
+SELECT animals.name, COUNT(*) as total_visit from animals
+JOIN visits ON visits.animals_id = animals.id
+GROUP BY animals.name
+ORDER BY total_visit DESC
+LIMIT 1;
+
+--Who was Maisy Smith's first visit?
+SELECT vets.name, animals.name, date_of_visit FROM vets JOIN visits ON vets.id=visits.vets_id
+JOIN animals ON animals.id= visits.animals_id WHERE vets.name ='Maisy Smith' ORDER BY visits.date_of_visit ASC LIMIT 1;
+
+--Details for most recent visit: animal information, vet information, and date of visit.
+SELECT
+	date_of_visit,
+	animals.date_of_birth as animal_dob,
+	animals.escape_attempts,
+	animals.neutered,
+	animals.weight_kg as animal_weight,
+	vets.name as vet_name,
+	vets.age as vet_age,
+	vets.date_of_graduation
+from visits
+JOIN animals ON animals.id = visits.animals_id
+JOIN vets ON vets.id = visits.vets_id
+ORDER BY date_of_visit DESC
+LIMIT 1;
+
+--How many visits were with a vet that did not specialize in that animal's species?
+SELECT COUNT(*)
+FROM visits
+JOIN animals ON animals.id = visits.animals_id
+JOIN vets ON vets.id = visits.vets_id
+JOIN specializations ON specializations.vets_id = visits.vets_id
+WHERE animals.species_id != specializations.species_id;
+
+--What specialty should Maisy Smith consider getting? Look for the species she gets the most.
+SELECT species.name as specialization , COUNT(visits.animals_id) from visits
+JOIN vets ON vets.id = visits.vets_id
+JOIN animals ON animals.id = visits.animals_id
+JOIN species ON species.id = animals.species_id
+WHERE vets.name = 'Maisy Smith'
+GROUP BY species.name;
+
+-- EXPLAIN ANALYZE
+EXPLAIN ANALYZE SELECT COUNT(*) FROM visits where animal_id = 4;
+EXPLAIN ANALYZE SELECT * FROM visits where vet_id = 2;
+EXPLAIN ANALYZE SELECT * FROM owners where email = 'owner_18327@mail.com';
